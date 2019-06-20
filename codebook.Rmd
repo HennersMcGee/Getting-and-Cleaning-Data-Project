@@ -1,0 +1,35 @@
+---
+title: "CodeBook"
+author: "Me"
+date: "20 June 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Variables
+
+In the final data set there are three variables.
+These are described below with details of their creation.
+
+# Activity
+
+This is the activity the volunteers were performing when the data was collect.
+This was extracted from the "y.txt" dataset for both test and train as a numeric value, and combined.
+Using a lookup from the file "activity_lables.txt" this numbers were converted to the activity description.
+
+# Mean
+
+This is the mean value of the acticity data.
+This was extracted from the "X.txt" dataset for both test and train, and combined.
+This had to be averaged on a row basis for each experiments data, and then average over each activity to get the final table.
+
+# SD
+
+This is the standard deviation value of the acticity data.
+This was extracted from the "X.txt" dataset for both test and train, and combined.
+This had to be calculated on a row basis for each experiments data, and then average over each activity to get the final table.
+
+
