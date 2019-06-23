@@ -199,19 +199,17 @@ $(document).ready(function () {
 
 <div id="variables" class="section level2">
 <h2>Variables</h2>
-<p>In the final data set there are three variables. These are described below with details of their creation.</p>
+<p>In the final data set there are 80 variables. These are described below with details of their creation.</p>
 </div>
 <div id="activity" class="section level1">
 <h1>Activity</h1>
 <p>This is the activity the volunteers were performing when the data was collect. This was extracted from the “y.txt” dataset for both test and train as a numeric value, and combined. Using a lookup from the file “activity_lables.txt” this numbers were converted to the activity description.</p>
 </div>
-<div id="mean" class="section level1">
-<h1>Mean</h1>
-<p>This is the mean value of the acticity data. This was extracted from the “X.txt” dataset for both test and train, and combined. This had to be averaged on a row basis for each experiments data, and then average over each activity to get the final table.</p>
-</div>
-<div id="sd" class="section level1">
-<h1>SD</h1>
-<p>This is the standard deviation value of the acticity data. This was extracted from the “X.txt” dataset for both test and train, and combined. This had to be calculated on a row basis for each experiments data, and then average over each activity to get the final table.</p>
+<div id="means-and-standard-deviations" class="section level1">
+<h1>Means and Standard Deviations</h1>
+<p>For the below list of variables, the mean and standard deviation is a column within the dataset. In the inital data extracted, we had information on all of these at a individual experiment level. We there avergaed them all within each activity give us the final values.</p>
+<p>The names of the variables describe them, with regard to sensors and axis direction (sometimes).</p>
+<p>tBodyAcc-XYZ tGravityAcc-XYZ tBodyAccJerk-XYZ tBodyGyro-XYZ tBodyGyroJerk-XYZ tBodyAccMag tGravityAccMag tBodyAccJerkMag tBodyGyroMag tBodyGyroJerkMag fBodyAcc-XYZ fBodyAccJerk-XYZ fBodyGyro-XYZ fBodyAccMag fBodyAccJerkMag fBodyGyroMag fBodyGyroJerkMag</p>
 </div>
 
 

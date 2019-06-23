@@ -17,70 +17,50 @@
 
 # 0 Read in the data sets
 
-#Define function to read in a named file from either the test or train folder
-#Note: dowload zip file has been extracted into a "data" folder within directory
-readInFiles <- function(file,location){
-    locat <- paste("./data/UCI HAR Dataset/",location,"/",file,"_",location,".txt",sep="")
-    data <- read.delim(locat, header=FALSE, sep="",stringsAsFactors = FALSE)
-}
-#Define a list of files to be extracted
-DataList <- c("X","y")
-#Extract files in list for both test and train
-for (i in DataList) {
-    for (j in c("train","test")) {
-        assign(paste(i,"_",j,sep=""), readInFiles(i,j))
-    }
-}
+location <- "./data/UCI HAR Dataset/"
+x_train <- read.delim(paste(location,"train/x_train.txt",sep=""), header=FALSE, sep="",stringsAsFactors = FALSE)
+y_train <- read.delim(paste(location,"train/y_train.txt",sep=""), header=FALSE, sep="",stringsAsFactors = FALSE)
+x_test <- read.delim(paste(location,"test/x_test.txt",sep=""), header=FALSE, sep="",stringsAsFactors = FALSE)
+y_test <- read.delim(paste(location,"test/y_test.txt",sep=""), header=FALSE, sep="",stringsAsFactors = FALSE)
+features <- read.delim(paste(location,"features.txt",sep=""), header=FALSE, sep="",stringsAsFactors = FALSE)
 
 # 1 Merge the training and the test sets to create one data set.
 
-#Loop through the dataset list combining train with test
-for (i in DataList) {
-    assign(i, rbind(get(paste(i,"_train",sep="")),get(paste(i,"_test",sep=""))))
+x <- rbind(x_train,x_test)
+y <- rbind(y_train,y_test)
+
+names(y) <- c("ActivityNumber")
+for (i in 1:length(features[,2])){
+    names(x)[i] <- features[i,2]
 }
+
+FullData <- cbind(y,x)
 
 # 2 Extracts only the measurements on the mean and standard deviation for each measurement.
 
-#Create empty dataset the same length with 3 columns ready for y and mean/sd of x data.
-Act_SD_Mean <- X[,1:3]*0
-colnames(Act_SD_Mean) <- c("ActivityNumber","sd","mean")
-#Assign the 3 columns with relevant data
-for (i in 1:length(X[,1])) {
-    Act_SD_Mean$ActivityNumber[i] <- y[i,]
-    Act_SD_Mean$sd[i] <- sd(X[i,],na.rm=TRUE)
-    Act_SD_Mean$mean[i] <- mean(as.numeric(X[i,],na.rm=TRUE),na.rm=TRUE)
-}
+FullData <- FullData[grepl("mean",names(FullData)) | grepl("std",names(FullData)) | grepl("ActivityNumber",names(FullData))]
 
 # 3 Uses descriptive activity names to name the activities in the data set
 
 #Create lookup data with the mapping from number to activity name
 lookup <- data.frame(c(1,2,3,4,5,6),
                      c("Walking","Walking Upstairs","Walking Downstairs","Sitting","Standing","Laying"))
-names(lookup) <- c("number","name")
+names(lookup) <- c("number","ActivityName")
 #Merge onto main data and delete now un-needed activity number column
-Act_SD_Mean <- merge(Act_SD_Mean, lookup, by.x="ActivityNumber", by.y ="number")
-Act_SD_Mean$ActivityNumber <- NULL
+FullData <- merge(lookup, FullData, by.x="number", by.y ="ActivityNumber")
+FullData$number <- NULL
 
 # 4 Appropriately label the data set with descriptive variable names.
 
-#Tidy the order and naming of the dataset
-Act_SD_Mean <- Act_SD_Mean[,c(3,2,1)]
-names(Act_SD_Mean) <- c("Activity","Mean","SD")
+## All variables already have appropriate names that aren't too long as to be unweildy.
 
 # 5 From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 
-#Create dataset with mean of mean data, split by activity
-Activity_Dataset_Summarised1 <- as.data.frame(tapply(Act_SD_Mean$Mean, Act_SD_Mean$Activity, mean))
-#Create dataset with mean of SD data, split by activity
-Activity_Dataset_Summarised2 <- as.data.frame(tapply(Act_SD_Mean$SD, Act_SD_Mean$Activity, mean))
-#Bind the two together
-Activity_Dataset_Summarised <- cbind(Activity_Dataset_Summarised1,Activity_Dataset_Summarised2)
-#Change row names to coulmn
-library(data.table)
-setDT(Activity_Dataset_Summarised, keep.rownames = TRUE)[]
-#Name columns appropriately
-names(Activity_Dataset_Summarised) <- c("Activity","Mean","SD")
+#install.packages("dplyr")
+library(dplyr)
+SumData <- FullData %>% group_by(ActivityName)
+SumData <- summarise_if(SumData, is.numeric, mean)
 
 # 5b Output data as .txt file
 
-write.table(Activity_Dataset_Summarised, file="./data/Activity_Dataset_Summarised.txt", row.name=FALSE)
+write.table(SumData, file="./Activity_Dataset_Summarised.txt", row.name=FALSE)
